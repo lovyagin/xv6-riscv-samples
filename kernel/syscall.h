@@ -21,5 +21,5 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 // Syscall number (constant)
-#define SYS_hello  22 
+#define SYS_scpy  22 
                    

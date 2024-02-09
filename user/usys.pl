@@ -36,4 +36,4 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-entry("hello");  # syscall code
+entry("scpy");   # syscall code
