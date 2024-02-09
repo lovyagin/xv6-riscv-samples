@@ -22,6 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int hello(void); // Simple hello-world syscall (wrapper)
 
 // ulib.c
 int stat(const char*, struct stat*);
