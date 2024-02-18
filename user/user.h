@@ -22,6 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+int add(int n1, int n2); // add two integers
 
 // ulib.c
 int stat(const char*, struct stat*);
