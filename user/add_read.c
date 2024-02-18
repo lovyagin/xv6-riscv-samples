@@ -10,7 +10,7 @@ int check_string(char *buf) {
         return 0;
     }
     for (int i = 0; i < len; ++i) {
-        if (buf[i] > '9' || buf[i] < '0') { /a/ проверка что первое - число
+        if (buf[i] > '9' || buf[i] < '0') { // проверка что первое - число
             return 0;
         }
     }
