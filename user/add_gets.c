@@ -35,8 +35,8 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    char in[BUF_LEN];
-    char *buf = gets(in, BUF_LEN);
+    char in[2*BUF_LEN];
+    char *buf = gets(in, 2*BUF_LEN);
     int buf_len = strlen(buf);
 
     if (buf_len == 1) { // в случае если передана пустая строка будет '\0'
@@ -46,12 +46,6 @@ main(int argc, char *argv[]) {
 
     normalize(buf);
 
-    int input_len = strlen(buf);
-    if (input_len == 1) {
-        printf("Error: empty argument\n");
-        exit(-1);
-    }
-
     char f1[BUF_LEN];
     char f2[BUF_LEN];
 
@@ -59,7 +53,7 @@ main(int argc, char *argv[]) {
     int space_was = 0, last_space = 0; // для контроля количества аргументов и парсинга
 
 
-    for (int i = 0; i < input_len; ++i) {
+    for (int i = 0; i < buf_len; ++i) {
         char x = buf[i];
         if (x == ' ') {
             if (first != 0) { // чтобы не учитывать начальные пробелы строки
@@ -78,18 +72,22 @@ main(int argc, char *argv[]) {
                 f2[second++] = x;
             }
         }
+        if (first == BUF_LEN || second == BUF_LEN) { // в случае переполнения буфера
+            printf("Error: too big argument\n");
+            exit(-1);
+        }
     }
 
     f1[first] = '\0';
     f2[second] = '\0';
 
     if (check_string(f1) == 0) {
-        printf("Error: incorrect first number\n");
+        fprintf(2, "Error: incorrect first number\n");
         exit(-1);
     }
 
     if (check_string(f2) == 0) {
-        printf("Error: incorrect second number\n");
+        fprintf(2, "Error: incorrect second number\n");
         exit(-1);
     }
 

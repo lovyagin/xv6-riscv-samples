@@ -25,7 +25,7 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    char buf[BUF_LEN];
+    char buf[2 * BUF_LEN];
 
     int cc = 0, j = 0;
     char c;
@@ -38,7 +38,7 @@ main(int argc, char *argv[]) {
         if (c == '\n' || c == '\r') {
             --j;
         }
-        if (j > BUF_LEN) {
+        if (j > 2 * BUF_LEN) {
             printf("Error: buffer overflow");
             exit(-1);
         }
@@ -80,6 +80,10 @@ main(int argc, char *argv[]) {
                 f1[first++] = x;
             } else {
                 f2[second++] = x;
+            }
+            if (first == BUF_LEN || second == BUF_LEN) {
+                printf("Error: too big argument\n");
+                exit(-1);
             }
         }
     }
