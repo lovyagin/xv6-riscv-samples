@@ -22,7 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int scpy(char *dst, char *str, int size); // Safe copy (via system)
+int scpy(char *dst, const char *src, int size); // Safe copy (via system)
 
 // ulib.c
 int stat(const char*, struct stat*);
