@@ -13,7 +13,7 @@ sys_hello:
     sd ra, 0(sp)     # save ra pointer,
     sd s1, 8(sp)     # save s1 register
 
-    la a0, msg       # format string
+    la a0, fmt       # format string
     la a1, msg       # first field
     la s1, printf    # printf kernel function address
     jalr ra, s1, 0   # call printf
