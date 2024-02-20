@@ -136,6 +136,7 @@ UPROGS=\
 	$U/_add_gets\
 	$U/_add_read\
 	$U/_add_test\
+	$U/_add_rv\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
