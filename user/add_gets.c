@@ -31,7 +31,7 @@ int
 main(int argc, char *argv[]) {
 
     if (argc != 1) { // в случае если неверное количество аргументов
-        printf("Error: wrong number of arguments\n");
+        fprintf(2, "Error: wrong number of arguments\n");
         exit(-1);
     }
 
@@ -40,7 +40,7 @@ main(int argc, char *argv[]) {
     int buf_len = strlen(buf);
 
     if (buf_len == 1) { // в случае если передана пустая строка будет '\0'
-        printf("Error: empty argument\n");
+        fprintf(2, "Error: empty argument\n");
         exit(-1);
     }
 
@@ -62,7 +62,7 @@ main(int argc, char *argv[]) {
             }
         } else {
             if (second != 0 && last_space == 1) { // в случе если больше 2 аргументов
-                printf("Error: incorrect number of arguments\n");
+                fprintf(2, "Error: incorrect number of arguments\n");
                 exit(-1);
             }
             last_space = 0;
@@ -73,7 +73,7 @@ main(int argc, char *argv[]) {
             }
         }
         if (first == BUF_LEN || second == BUF_LEN) { // в случае переполнения буфера
-            printf("Error: too big argument\n");
+            fprintf(2, "Error: too big argument\n");
             exit(-1);
         }
     }
