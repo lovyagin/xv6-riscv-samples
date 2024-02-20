@@ -1,6 +1,7 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
+#include "kernel/errno.h"
 
 #include <stdarg.h>
 
@@ -110,4 +111,19 @@ printf(const char *fmt, ...)
 
   va_start(ap, fmt);
   vprintf(1, fmt, ap);
+}
+
+
+char *errmsg[] = {
+  [ESUCCESS] "No error",
+  [ENULL]    "NULL userspace address",
+  [EFAULT]   "Bad userspace address",
+  [ENOMEM]   "Not enough kernel memory",
+  [ESIZE]    "Bad buffer size"
+};
+
+void perror(int errno)
+{
+  fprintf(2, errmsg[errno]);
+  fprintf(2, "\n");
 }
