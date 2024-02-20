@@ -20,14 +20,12 @@ uint64 sys_scpy(void)
     if (src == 0) return -ENULL;             // error code: src buffer invalid
 
     char buf[BUF_LEN];                       // kernel buffer for source string
-    int len = 0;                             // source string length
     int ret;                                 // copy return status
     char *d = buf;                           // write source string here
     do
     {
         // byte-by-byte copy
         ret = copyin(myproc()->pagetable, d, src++, 1);
-        ++len;
     }
     while (ret >= 0 && *d++ != '\0'
            && d < buf + BUF_LEN);            // until '\0' received or buffer exceeded
@@ -35,12 +33,14 @@ uint64 sys_scpy(void)
     if (ret < 0) return -EFAULT;             // error code, src string invalid
     if (d >= buf + BUF_LEN) return -ENOMEM;  // not enough kernel buffer size
 
+    int len = d - buf;                       // bytes copied
+
     int size;
     argint(2, &size);                        // third argument: dst buffer length
 
-    if (len + 1 > size) return -ESIZE;       // error code, dst buffer too small
+    if (len > size) return -ESIZE;           // error code, dst buffer too small
 
-    ret = copyout(myproc()->pagetable, dst, buf, len + 1);
+    ret = copyout(myproc()->pagetable, dst, buf, len);
     if (ret < 0) return -EFAULT;             // error code, dst buffer invalid
 
     return 0;                                // Success
