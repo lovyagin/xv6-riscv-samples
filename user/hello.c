@@ -10,7 +10,7 @@ main(int argc, char *argv[])
   char str[] = "Hello, world";
   char buf[BUF_SIZE];
   int ret;
-  
+
   buf[0] = '\0';
   ret = scpy (buf, str, BUF_SIZE);            // Trying to copy (good)
   printf(ret == 0 ? "Test 1: success" : "Test 1: copy error");
