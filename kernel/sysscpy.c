@@ -25,6 +25,7 @@ uint64 sys_scpy(void)
     if (len + 1 > size) return -2; // error code, dst buffer too small
 
     int ret = copyout(myproc()->pagetable, dst, buf, len + 1);
+
     if (ret < 0) return -3;        // error code, dst buffer invalid
 
     return 0;                      // Success

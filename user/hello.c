@@ -33,7 +33,11 @@ main(int argc, char *argv[])
 
   buf[0] = '\0';
   ret = scpy (buf, (char *) 0, BUF_SIZE); // Trying to copy (NULL src address)
-  printf(ret == 0 ? "Test 4: success" : "Test 4: copy error");
+  printf(ret == 0 ? "Test 5: success" : "Test 5: copy error");
   printf("\treturn code %d\tbuffer content: '%s'\n", ret, buf);
 
+  buf[0] = '\0';
+  ret = scpy ((char *) 0, str, BUF_SIZE); // Trying to copy (NULL dst address)
+  printf(ret == 0 ? "Test 6: success" : "Test 6: copy error");
+  printf("\treturn code %d\tbuffer content: '%s'\n", ret, buf);
 }
