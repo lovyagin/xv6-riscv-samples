@@ -10,7 +10,7 @@ int check_string(char *buf) {
         return 0;
     }
     for (int i = 0; i < len; ++i) {
-        if (buf[i] > '9' || buf[i] < '0') { // проверка что первое - число
+        if ((buf[i] > '9' || buf[i] < '0') && buf[i] != ' ') { // проверка что первое - число
             return 0;
         }
     }
@@ -35,25 +35,30 @@ main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    char in[2*BUF_LEN];
-    char *buf = gets(in, 2*BUF_LEN);
+    char in[2 * BUF_LEN];
+    char *buf = gets(in, 2 * BUF_LEN);
     int buf_len = strlen(buf);
 
-    if (buf_len == 1) { // в случае если передана пустая строка будет '\0'
+    if (buf_len <= 1) {
         fprintf(2, "Error: empty argument\n");
         exit(-1);
     }
 
+    int number1 = 0, number2 = 0;
+
     normalize(buf);
 
-    char f1[BUF_LEN];
-    char f2[BUF_LEN];
+    if (check_string(buf) != 1) {
+        fprintf(2, "Error: incorrect symbol in argument\n");
+        exit(-1);
+    }
 
     int first = 0, second = 0;         // индексы в буферах чисел
     int space_was = 0, last_space = 0; // для контроля количества аргументов и парсинга
 
+    char cur[2] = {'\0', '\0'};
 
-    for (int i = 0; i < buf_len; ++i) {
+    for (int i = 0; buf[i]; ++i) {
         char x = buf[i];
         if (x == ' ') {
             if (first != 0) { // чтобы не учитывать начальные пробелы строки
@@ -61,15 +66,20 @@ main(int argc, char *argv[]) {
                 last_space = 1;
             }
         } else {
+            cur[0] = x;
             if (second != 0 && last_space == 1) { // в случе если больше 2 аргументов
                 fprintf(2, "Error: incorrect number of arguments\n");
                 exit(-1);
             }
             last_space = 0;
             if (space_was == 0) {
-                f1[first++] = x;
+                first++;
+                number1 *= 10;
+                number1 += atoi(cur);
             } else {
-                f2[second++] = x;
+                second++;
+                number2 *= 10;
+                number2 += atoi(cur);
             }
         }
         if (first == BUF_LEN || second == BUF_LEN) { // в случае переполнения буфера
@@ -78,21 +88,10 @@ main(int argc, char *argv[]) {
         }
     }
 
-    f1[first] = '\0';
-    f2[second] = '\0';
-
-    if (check_string(f1) == 0) {
-        fprintf(2, "Error: incorrect first number\n");
+    if (space_was == 0) {
+        fprintf(2, "Error: only one argument\n");
         exit(-1);
     }
-
-    if (check_string(f2) == 0) {
-        fprintf(2, "Error: incorrect second number\n");
-        exit(-1);
-    }
-
-    int number1 = atoi(f1);
-    int number2 = atoi(f2);
 
     printf("%d\n", number1 + number2);
 
