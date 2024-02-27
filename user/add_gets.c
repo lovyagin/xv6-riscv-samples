@@ -3,29 +3,18 @@
 
 void errorMessage(const char* msg) {
   write(2, msg, strlen(msg));
-  exit(0);
+  exit(-1);
 }
 
-int readInt(char* buf, int bufSize, char* dst) {
-  int i;
-  i = 0;
-  while (i < bufSize && buf[i] >= '0' && buf[i] <= '9') {
-    dst[i] = buf[i];
-    ++i;
-  }
-  if (i == 0)
-    errorMessage("Incorrect input\n");
-  dst[i] = '\0';
-  return i;
+void checkZero(int x, char* ptr) {
+  if (x == 0 && (*ptr) != '0')
+    errorMessage("Can not read one of the numbers\n");
 }
 
-void readToEnd() {
-  char c;
-  int cc;
-  for(;;) {
-    cc = read(0, &c, 1);
-    if (cc < 1 || c == '\n') break;
-  }
+char* passInteger(char* start, char* end) {
+  char* ptr = start;
+  while (ptr < end && *ptr >= '0' && *ptr <= '9') ptr++;
+  return ptr;
 }
 
 int main(int argc, char *argv[])
@@ -35,35 +24,34 @@ int main(int argc, char *argv[])
   const int BUF_SIZE = 30;
   char buf[BUF_SIZE];
   gets(buf, BUF_SIZE);
-  if (strlen(buf) == BUF_SIZE - 1) {
-    if (buf[BUF_SIZE - 1] != '\n') 
-      readToEnd();
+
+  int realBufSize = strlen(buf);
+
+  if (realBufSize == BUF_SIZE - 1) {
     errorMessage("Error: too large input\n");
   }
-  char first_num[BUF_SIZE];
-  int n, first_sz;
+  char* firstNum = buf;
+  char* secondNum = passInteger(buf, buf + realBufSize);
 
-  n = strlen(buf);
-  first_sz = 0;
+  if (secondNum == firstNum) errorMessage("Incorrect input\n");
 
-  first_sz = readInt(buf, n, first_num);
+  if (secondNum == buf + realBufSize)
+    errorMessage("Expected two integers, but only one given\n");
 
-  if (first_sz == n)
-    errorMessage("Expected two numbers, but given only one\n");
+  if (*secondNum != ' ')
+    errorMessage("Can not find space\n");
+  secondNum++;
 
-  if (buf[first_sz] != ' ')
-    errorMessage("Incorrect input\n");
+  char* end = passInteger(secondNum, buf + realBufSize);
 
-  char second_num[BUF_SIZE];
-  int second_sz;
+  if (end != buf + realBufSize && *end != '\n') 
+    errorMessage("Incorrect format\n");
 
-  second_sz = readInt(buf + first_sz + 1, n - first_sz - 1, second_num);
+  int x = atoi(firstNum), y = atoi(secondNum);
 
-  int readSz = first_sz + second_sz + 1;
-  if (readSz != n - 1 || buf[readSz] != '\n')
-    errorMessage("Incorrect input\n");
+  checkZero(x, firstNum);
+  checkZero(y, secondNum);
 
-  int x = atoi(first_num), y = atoi(second_num);
-  add(x, y);
+  printf("%d\n", add(x, y));
   exit(0);
 }

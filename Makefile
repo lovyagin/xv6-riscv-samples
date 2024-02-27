@@ -135,6 +135,7 @@ UPROGS=\
 	$U/_zombie\
 	$U/_add_gets\
 	$U/_add_read\
+	$U/_add_asm\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

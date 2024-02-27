@@ -8,6 +8,5 @@ uint64 sys_add(void)
 
 	argint(0, &x);
 	argint(1, &y);
-	printf("%d\n", x + y);
-	return 0;
+	return x + y;	
 }
