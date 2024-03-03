@@ -42,7 +42,7 @@ main(int argc, char *argv[]) {
         if (c == '\n' || c == '\r') {
             --j;
         }
-        if (j > 2 * BUF_LEN) {
+        if (j >= 2 * BUF_LEN) {
             fprintf(2, "Error: buffer overflow\n");
             exit(-1);
         }
