@@ -3,7 +3,7 @@
 
 void errorMessage(const char* msg) {
   write(2, msg, strlen(msg));
-  exit(-1);
+  exit(1);
 }
 
 void checkZero(int x, char* ptr) {
