@@ -716,14 +716,12 @@ ps_listinfo (struct procinfo *plist, int lim){
             continue;
         }
 
-        // копируем имя процесса
         if (copyout(myproc()->pagetable, addr, p->name, sizeof(p->name)) < 0) {
             release(&p->lock);
-            return -2;
+            return -1;
         }
         addr += sizeof(p->name);
 
-        // копируем состояние процесса
         if (copyout(myproc()->pagetable, addr, (char *)&p->state, sizeof(p->state)) < 0) {
             release(&p->lock);
             return -2;
@@ -743,14 +741,11 @@ ps_listinfo (struct procinfo *plist, int lim){
 
         if (copyout(myproc()->pagetable, addr, (char *)&parent_pid, sizeof(parent_pid)) < 0) {
             release(&p->lock);
-            return -2;
+            return -3;
         }
         addr += sizeof(parent_pid);
 
-
         release(&p->lock);
-
-
     }
 
     return cnt;

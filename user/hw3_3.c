@@ -29,7 +29,7 @@ main(int argc, char *argv[]) {
     printf("Успех в тесте на маленьком лимите, было возвращено %d > 1\n", count);
 
 
-    // Некорректный адрес
+    // некорректный адрес
     count = listinfo((struct procinfo *)0xFFFFFFFFFFFFF000, 20);
     if (count >= 0) {
         fprintf(2, "Ошибка на некорректном адресе, было возвращено %d\n", count);
@@ -38,7 +38,7 @@ main(int argc, char *argv[]) {
     printf("Успех на некорректном адресе, было возвращено %d\n", count);
 
 
-    // Передача NULL
+    // передача NULL
     count = listinfo((struct procinfo *)NULL, 20);
     if (count < 0) {
         fprintf(2, "Ошибка на NULL, было возвращено %d\n", count);
