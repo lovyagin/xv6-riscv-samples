@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "proc_info.h"
 
 struct cpu cpus[NCPU];
 
@@ -33,7 +34,7 @@ void
 proc_mapstacks(pagetable_t kpgtbl)
 {
   struct proc *p;
-  
+
   for(p = proc; p < &proc[NPROC]; p++) {
     char *pa = kalloc();
     if(pa == 0)
@@ -48,7 +49,7 @@ void
 procinit(void)
 {
   struct proc *p;
-  
+
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
   for(p = proc; p < &proc[NPROC]; p++) {
@@ -93,7 +94,7 @@ int
 allocpid()
 {
   int pid;
-  
+
   acquire(&pid_lock);
   pid = nextpid;
   nextpid = nextpid + 1;
@@ -236,7 +237,7 @@ userinit(void)
 
   p = allocproc();
   initproc = p;
-  
+
   // allocate one user page and copy initcode's instructions
   // and data into it.
   uvmfirst(p->pagetable, initcode, sizeof(initcode));
@@ -372,7 +373,7 @@ exit(int status)
 
   // Parent might be sleeping in wait().
   wakeup(p->parent);
-  
+
   acquire(&p->lock);
 
   p->xstate = status;
@@ -428,7 +429,7 @@ wait(uint64 addr)
       release(&wait_lock);
       return -1;
     }
-    
+
     // Wait for a child to exit.
     sleep(p, &wait_lock);  //DOC: wait-sleep
   }
@@ -446,7 +447,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  
+
   c->proc = 0;
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
@@ -536,7 +537,7 @@ void
 sleep(void *chan, struct spinlock *lk)
 {
   struct proc *p = myproc();
-  
+
   // Must acquire p->lock in order to
   // change p->state and then call sched.
   // Once we hold p->lock, we can be
@@ -615,7 +616,7 @@ int
 killed(struct proc *p)
 {
   int k;
-  
+
   acquire(&p->lock);
   k = p->killed;
   release(&p->lock);
@@ -680,4 +681,73 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+
+int
+ps_listinfo (struct procinfo *plist, int lim){
+
+    uint64 addr = (uint64) plist;
+    int cnt = 0;
+    struct proc *p;
+
+    for (p = proc; p < &proc[NPROC]; p++) {
+
+        acquire(&p->lock);
+
+        // пропускаем ненужные
+        if (p->state == UNUSED) {
+            release(&p->lock);
+            continue;
+        }
+
+        ++cnt;
+
+        //в случае если слишком много, то только считаем количество процессов
+        if(cnt>lim){
+            release(&p->lock);
+            continue;
+        }
+
+        // в случае если в качестве адреса NULL, то только
+        // считаем количество процессов
+        if(!plist){
+            release(&p->lock);
+            continue;
+        }
+
+        // копируем имя процесса
+        if (copyout(myproc()->pagetable, addr, p->name, sizeof(p->name)) < 0) {
+            release(&p->lock);
+            return -2;
+        }
+        addr += sizeof(p->name);
+
+        // копируем состояние процесса
+        if (copyout(myproc()->pagetable, addr, (char *)&p->state, sizeof(p->state)) < 0) {
+            release(&p->lock);
+            return -2;
+        }
+        addr += sizeof(p->state);
+
+        // копируем идентификатор родительского процесса
+        // с проверкой, что указатель на него не NULL
+        int parent_pid = -1;
+        acquire(&wait_lock);
+
+        if (p->parent) {
+            parent_pid = p->parent->pid;
+        }
+
+        release(&wait_lock);
+
+        if (copyout(myproc()->pagetable, addr, (char *)&parent_pid, sizeof(parent_pid)) < 0) {
+            release(&p->lock);
+            return -2;
+        }
+        addr += sizeof(parent_pid);
+
+    }
+
+    return cnt;
 }
