@@ -14,5 +14,7 @@ uint64 sys_listinfo(void){
     argaddr(0, &plist);
     argint(2, &limit);
 
-    return ps_listinfo((struct procinfo *)plist, limit);
+    int ans =  ps_listinfo((struct procinfo *)plist, limit);
+
+    return (uint64) ans;
 }

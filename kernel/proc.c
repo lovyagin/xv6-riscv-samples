@@ -711,7 +711,7 @@ ps_listinfo (struct procinfo *plist, int lim){
 
         // в случае если в качестве адреса NULL, то только
         // считаем количество процессов
-        if(!plist){
+        if(!addr){
             release(&p->lock);
             continue;
         }
@@ -746,6 +746,10 @@ ps_listinfo (struct procinfo *plist, int lim){
             return -2;
         }
         addr += sizeof(parent_pid);
+
+
+        release(&p->lock);
+
 
     }
 

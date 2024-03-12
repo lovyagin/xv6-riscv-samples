@@ -1,3 +1,4 @@
+#include "../kernel/proc_info.h"
 struct stat;
 
 // system calls
@@ -23,7 +24,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int add(int n1, int n2); // add two integers
-int listinfo(uint64 pointer, int limit); // get processes info
+int listinfo(struct procinfo *plist, int limit); // get processes info
 
 // ulib.c
 int stat(const char*, struct stat*);
