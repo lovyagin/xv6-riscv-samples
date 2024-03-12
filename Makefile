@@ -143,6 +143,7 @@ UPROGS=\
 	$U/_hw1_2\
 	$U/_hw1_3\
 	$U/_hw3_3\
+	$U/_ps\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
