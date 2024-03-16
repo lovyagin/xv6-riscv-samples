@@ -29,8 +29,12 @@ int main(int argc, char *argv[]) {
 
         while (1) {
             n = read(p[0], &symb, 1);
-            if (n <= 0) {
+            if (n == 0) {
                 break;
+            }
+            if (n < 0) {
+                fprintf(2, "Ошибка чтения из канала дочернего процесса \n");
+                exit(-1);
             }
             printf("%c", symb);
         }
@@ -44,8 +48,14 @@ int main(int argc, char *argv[]) {
         close(p[0]);
 
         for (int i = 1; i < argc; i++) {
-            write(p[1], argv[i], strlen(argv[i]));
-            write(p[1], "\n", 1);
+            if (strlen(argv[i]) != write(p[1], argv[i], strlen(argv[i]))) {
+                fprintf(2, "Ошибка записи в канал из родительского процесса\n");
+                exit(-1);
+            }
+            if (strlen("\n") != write(p[1], "\n", 1)) {
+                fprintf(2, "Ошибка записи в канал из родительского процесса\n");
+                exit(-1);
+            }
         }
 
         close(p[1]);
