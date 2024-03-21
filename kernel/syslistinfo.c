@@ -12,7 +12,7 @@ uint64 sys_listinfo(void){
     int limit;
 
     argaddr(0, &plist);
-    argint(2, &limit);
+    argint(1, &limit);
 
     int ans =  ps_listinfo((struct procinfo *)plist, limit);
 

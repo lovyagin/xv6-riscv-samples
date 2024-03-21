@@ -8,25 +8,48 @@
 int
 main(int argc, char *argv[]) {
 
-    struct procinfo processes[NPROC];
+    int proc_cnt = 1;
     int count;
 
     const char *states[] = {
             "UNUSED", "USED", "SLEEPING", "RUNNABLE", "RUNNING", "ZOMBIE"
     };
 
-    count = listinfo(processes, NPROC);
+    struct procinfo *buffer;
 
-    if (count < 0 || count > NPROC) {
-        fprintf(2, "Ошибка при системном вызове\n");
-        exit(-2);
+    while (1) {
+        buffer = malloc(sizeof(struct procinfo) * proc_cnt);
+
+        if (buffer == 0) {
+            fprintf(2, "Ошибка при выделении памяти для буфера\n");
+            exit(-1);
+        }
+
+        count = listinfo(buffer, proc_cnt);
+
+        if (count < 0) {
+            free(buffer);
+            fprintf(2, "Ошибка при системном вызове\n");
+            exit(-1);
+        }
+
+        if (proc_cnt < count) {
+            free(buffer);
+            proc_cnt *= 2;
+            continue;
+        }
+
+        printf("Информация о текущих процессах:\n");
+        for (int i = 0; i < count; ++i) {
+            printf("%d) Имя процесса - %s, состояние - %s , pid родителя - %d\n",
+                   i + 1, buffer[i].name, states[buffer[i].state], buffer[i].parent_pid);
+        }
+
+        free(buffer);
+
+        exit(1);
     }
 
-    printf("Информация о текущих процессах:\n");
-    for (int i = 0; i < count; ++i) {
-        printf("Имя процесса - %s, состояние - %s, pid родителя - %d\n",
-               processes[i].name, states[processes[i].state] , processes[i].parent_pid);
-    }
+    exit(-1);
 
-    exit(0);
 }

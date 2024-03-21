@@ -231,9 +231,6 @@ uchar initcode[] = {
 
 // Set up first user process.
 void
-userinit(void)
-{
-  struct proc *p;
 
   p = allocproc();
   initproc = p;
@@ -687,9 +684,9 @@ procdump(void)
 int
 ps_listinfo (struct procinfo *plist, int lim){
 
-    uint64 addr = (uint64) plist;
     int cnt = 0;
     struct proc *p;
+    struct procinfo procInf;
 
     for (p = proc; p < &proc[NPROC]; p++) {
 
@@ -711,39 +708,28 @@ ps_listinfo (struct procinfo *plist, int lim){
 
         // в случае если в качестве адреса NULL, то только
         // считаем количество процессов
-        if(!addr){
+        if (!plist) {
             release(&p->lock);
             continue;
         }
 
-        if (copyout(myproc()->pagetable, addr, p->name, sizeof(p->name)) < 0) {
-            release(&p->lock);
-            return -1;
-        }
-        addr += sizeof(p->name);
+        strncpy(procInf.name, p->name, sizeof(p->name));
+        procInf.state = p->state;
 
-        if (copyout(myproc()->pagetable, addr, (char *)&p->state, sizeof(p->state)) < 0) {
+        // блок для чтения pid
+        acquire(&wait_lock);
+        if (p->parent == 0) {
+            procInf.parent_pid = -1;
+        } else {
+            procInf.parent_pid = p->parent->pid;
+        }
+        release(&wait_lock);
+
+        // копирование
+        if (copyout(myproc()->pagetable, (uint64) (plist + cnt - 1), (char *) (&procInf), sizeof(procInf)) != 0) {
             release(&p->lock);
             return -2;
         }
-        addr += sizeof(p->state);
-
-        // копируем идентификатор родительского процесса
-        // с проверкой, что указатель на него не NULL
-        int parent_pid = -1;
-        acquire(&wait_lock);
-
-        if (p->parent) {
-            parent_pid = p->parent->pid;
-        }
-
-        release(&wait_lock);
-
-        if (copyout(myproc()->pagetable, addr, (char *)&parent_pid, sizeof(parent_pid)) < 0) {
-            release(&p->lock);
-            return -3;
-        }
-        addr += sizeof(parent_pid);
 
         release(&p->lock);
     }
