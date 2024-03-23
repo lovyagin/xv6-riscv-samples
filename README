@@ -1,4 +1,4 @@
-BRANCH "hello"
+BRANCH "hello_rv"
 
 This branch contains a sample 'Hello, World!' program (in RISC-V assembler) for xv6. Modified or added files include
 
