@@ -5,7 +5,7 @@ This branch contains a sample 'Hello World!' program (in C) for xv6. Modified or
 Makefile
 user/hello.c
 
-This sample code is
+The additional sample code is
 Copyright (c) 2024 Nikita Yu. Lovyagin
 
 The following is the text of the original README file.
