@@ -1,4 +1,4 @@
-BRANCH "sys_hello"
+BRANCH "sys_args"
 
 This branch contains a sample syscall implementation (accessing syscall argument) for xv6. Modified or added files include
 
@@ -10,7 +10,7 @@ user/hello.c
 user/user.h
 user/usys.pl
 
-This sample code is
+The additional sample code is
 Copyright (c) 2024 Nikita Yu. Lovyagin
 
 The following is the text of the original README file.
