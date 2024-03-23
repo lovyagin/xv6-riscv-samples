@@ -1,6 +1,6 @@
 BRANCH "sys_hello"
 
-This branch contains a sample 'Hello, World!' syscall implementation (in C anguage) for xv6. Modified or added files include
+This branch contains a sample 'Hello, World!' syscall implementation (in C language) for xv6. Modified or added files include
 
 Makefile
 kernel/syscall.c
