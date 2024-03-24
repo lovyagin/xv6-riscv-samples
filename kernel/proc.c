@@ -231,6 +231,8 @@ uchar initcode[] = {
 
 // Set up first user process.
 void
+userinit(void) {
+    struct proc *p;
 
   p = allocproc();
   initproc = p;
@@ -624,15 +626,14 @@ killed(struct proc *p)
 // depending on usr_dst.
 // Returns 0 on success, -1 on error.
 int
-either_copyout(int user_dst, uint64 dst, void *src, uint64 len)
-{
-  struct proc *p = myproc();
-  if(user_dst){
-    return copyout(p->pagetable, dst, src, len);
-  } else {
-    memmove((char *)dst, src, len);
-    return 0;
-  }
+either_copyout(int user_dst, uint64 dst, void *src, uint64 len) {
+    struct proc *p = myproc();
+    if (user_dst) {
+        return copyout(p->pagetable, dst, src, len);
+    } else {
+        memmove((char *) dst, src, len);
+        return 0;
+    }
 }
 
 // Copy from either a user address, or kernel address,
