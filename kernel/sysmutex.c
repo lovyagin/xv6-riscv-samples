@@ -9,12 +9,12 @@
 uint64
 sys_new_mutex() {
     int description = alloc_mutex();
-    printf("something %d\n", description);
     if (description < 0) {
         return -1;
     }
-    if (add_new_mutex(description) < 0) return -2;
-    printf("added\n");
+    if (add_new_mutex(description) < 0) {
+        return -2;
+    }
     return description;
 }
 
