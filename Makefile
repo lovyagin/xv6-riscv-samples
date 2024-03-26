@@ -140,6 +140,7 @@ UPROGS=\
 	$U/_add_test\
 	$U/_add_rv\
 	$U/_hw3_mut\
+	$U/_hw3_notmut\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
