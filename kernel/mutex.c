@@ -49,9 +49,8 @@ acquire_mutex(int descriptor) {
     if (descriptor < 0 || descriptor >= NMUTEX)
         return -1;
 
-    acquire(&mutexes[descriptor].spinlock);
     acquiresleep(&mutexes[descriptor].sleeplock);
-    release(&mutexes[descriptor].spinlock);
+
     return 0;
 }
 
@@ -63,9 +62,7 @@ release_mutex(int descriptor) {
     if (descriptor < 0 || descriptor >= NMUTEX)
         return -1;
 
-    acquire(&mutexes[descriptor].spinlock);
     releasesleep(&mutexes[descriptor].sleeplock);
-    release(&mutexes[descriptor].spinlock);
 
     return 0;
 }
@@ -79,10 +76,13 @@ use_mutex(int descriptor) {
     if (descriptor < 0 || descriptor >= NMUTEX)
         return -1;
 
+
     // для избежания гонки данных и корректной работы счетчика
     acquire(&mutexes[descriptor].spinlock);
-    mutexes[descriptor].used++;
+    mutexes[descriptor].used += 1;
     release(&mutexes[descriptor].spinlock);
+
+
 
     return 0;
 }
@@ -114,15 +114,25 @@ free_mutex(int descriptor) {
     if (rel_code < 0)
         return -2;
 
+
+
     acquire(&mutexes[descriptor].spinlock);
+
 
     if (mutexes[descriptor].used == 0) {
         release(&mutexes[descriptor].spinlock);
         return -3;
     }
 
-    mutexes[descriptor].used--;
-    release(&mutexes[descriptor].spinlock);
+    struct proc* p = myproc();
+    for (int i = 0; i < NOMUTEX; ++i) {
+        if (p->mutexes[i] == descriptor) {
+            mutexes[descriptor].used--;
+            p->mutexes[i] = -1;
+            release(&mutexes[descriptor].spinlock);
+            return 0;
+        }
+    }
 
-    return 0;
+    return -4;
 }

@@ -139,6 +139,7 @@ UPROGS=\
 	$U/_add_read\
 	$U/_add_test\
 	$U/_add_rv\
+	$U/_hw3_mut\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

@@ -55,10 +55,10 @@ procinit(void)
       initlock(&p->lock, "proc");
       p->state = UNUSED;
       p->kstack = KSTACK((int) (p - proc));
-  }
-  // изначльно нет мьютексов, поэтому пишем что-то отрицательное
-  for(int i = 0 ; i < NOMUTEX; ++i){
-      p->mutexes[i] = -1;
+      // изначльно нет мьютексов, поэтому пишем что-то отрицательное
+      for(int i = 0 ; i < NOMUTEX; ++i){
+          p->mutexes[i] = -1;
+      }
   }
 }
 
@@ -382,7 +382,8 @@ exit(int status)
       if(p->mutexes[i]<0){
           continue;
       }
-      if(free_mutex(p->mutexes[i])<0){
+      int ex = free_mutex(p->mutexes[i]);
+      if(ex<0){
           panic("can`t free mutex in exit of process");
       }
   }
@@ -718,7 +719,7 @@ int add_new_mutex(int description){
     for (int i = 0; i < NOMUTEX; i++) {
         if (p->mutexes[i] >=0 ) continue;
 
-        p->mutexes[i] = description;
+        p->mutexes[i] =description;
         release(&p->lock);
         return 0;
     }
