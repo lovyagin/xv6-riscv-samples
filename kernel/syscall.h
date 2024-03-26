@@ -21,3 +21,7 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_add    22
+#define SYS_new_mutex    23
+#define SYS_acquire_mutex    24
+#define SYS_release_mutex    25
+#define SYS_free_mutex    26

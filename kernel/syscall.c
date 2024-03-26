@@ -102,6 +102,11 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_add(void); // add function prototype
+extern uint64 sys_new_mutex(void);     // create new mutex
+extern uint64 sys_acquire_mutex(void); // acquire mutex by description
+extern uint64 sys_release_mutex(void); // release mutex by description
+extern uint64 sys_free_mutex(void);    // free mutex by description
+
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -128,6 +133,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_add]     sys_add, // add table entry
+[SYS_new_mutex]         sys_new_mutex, // add table entry
+[SYS_acquire_mutex]     sys_acquire_mutex, // add table entry
+[SYS_release_mutex]     sys_release_mutex, // add table entry
+[SYS_free_mutex]       sys_free_mutex, // add table entry
 };
 
 void
