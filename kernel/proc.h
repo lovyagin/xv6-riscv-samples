@@ -104,4 +104,5 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  int mutexes[NOMUTEX];        // таблица дескрипторов мьютексов процесса, если значение <0, значит, что мьютекса нет
 };

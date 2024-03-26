@@ -8,6 +8,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct mutex;
 
 // bio.c
 void            binit(void);
@@ -106,6 +107,7 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+int             add_new_mutex(int description);
 
 // swtch.S
 void            swtch(struct context*, struct context*);
@@ -184,6 +186,17 @@ void            plic_complete(int);
 void            virtio_disk_init(void);
 void            virtio_disk_rw(struct buf *, int);
 void            virtio_disk_intr(void);
+
+
+//  mutex.c
+
+void           mutex_init(void);
+int            alloc_mutex(void);
+int            acquire_mutex(int descriptor);
+int            release_mutex(int descriptor);
+int            use_mutex(int descriptor);
+int            holding_mutex(int descriptor);
+int            free_mutex(int descriptor);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
