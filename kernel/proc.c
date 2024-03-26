@@ -318,7 +318,7 @@ fork(void)
           continue;
       }
       if (use_mutex(p->mutexes[j]) < 0) {
-          panic("error in copy mutex to child porc");
+          panic("error in copy mutex to child proc");
       }
 
   }
@@ -717,7 +717,9 @@ int add_new_mutex(int description){
     struct proc* p = myproc();
     acquire(&p->lock);
     for (int i = 0; i < NOMUTEX; i++) {
-        if (p->mutexes[i] >=0 ) continue;
+        if (p->mutexes[i] >=0 ){
+            continue;
+        }
 
         p->mutexes[i] =description;
         release(&p->lock);

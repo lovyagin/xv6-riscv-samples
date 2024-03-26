@@ -76,13 +76,10 @@ use_mutex(int descriptor) {
     if (descriptor < 0 || descriptor >= NMUTEX)
         return -1;
 
-
     // для избежания гонки данных и корректной работы счетчика
     acquire(&mutexes[descriptor].spinlock);
     mutexes[descriptor].used += 1;
     release(&mutexes[descriptor].spinlock);
-
-
 
     return 0;
 }
@@ -102,22 +99,22 @@ holding_mutex(int descriptor) {
 // осовобождаем мьютекс по его дескриптору
 // успех - 0
 // коды ошибок:
-// -1 - неверный дескриптор, -2 - ошибка освобождения,
-// -3 - его никто не использует
+// -1 - не свой мьютекс, -2 - ошибка освобождения,
+// -3 - его никто не использует, -4 - неверный дескриптор
 int
 free_mutex(int descriptor) {
 
     int holds = holding_mutex(descriptor);
-    int rel_code = release_mutex(descriptor);
+    // пытаемся освободить чужую блокировку
     if (holds < 0)
         return -1;
+
+    int rel_code = release_mutex(descriptor);
+    // ошибка в освобождении
     if (rel_code < 0)
         return -2;
 
-
-
     acquire(&mutexes[descriptor].spinlock);
-
 
     if (mutexes[descriptor].used == 0) {
         release(&mutexes[descriptor].spinlock);
@@ -125,6 +122,8 @@ free_mutex(int descriptor) {
     }
 
     struct proc* p = myproc();
+    // удаляем мьютекс из набора у данного процесса, чтобы потом
+    // не было двойного освобождения и ошибки
     for (int i = 0; i < NOMUTEX; ++i) {
         if (p->mutexes[i] == descriptor) {
             mutexes[descriptor].used--;
