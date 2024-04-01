@@ -711,8 +711,8 @@ procdump(void)
 }
 
 
-// добавляет дескриптор мьютекса в текущий процесс
-// в случае успеха - 0, в случае если уже максимум - -1
+// добавляет дескриптор мьютекса глобальной таблицы в  таблицу текущего процесс
+// в случае успеха - дескриптор в таблице процесса, в случае если уже максимум - -1
 int add_new_mutex(int description){
     struct proc* p = myproc();
     acquire(&p->lock);
@@ -721,9 +721,9 @@ int add_new_mutex(int description){
             continue;
         }
 
-        p->mutexes[i] =description;
+        p->mutexes[i] = description;
         release(&p->lock);
-        return 0;
+        return i;
     }
     release(&p->lock);
     return -1;

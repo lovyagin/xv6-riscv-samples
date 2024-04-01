@@ -189,13 +189,11 @@ void            virtio_disk_intr(void);
 
 
 //  mutex.c
-
 void           mutex_init(void);
 int            alloc_mutex(void);
 int            acquire_mutex(int descriptor);
 int            release_mutex(int descriptor);
 int            use_mutex(int descriptor);
-int            holding_mutex(int descriptor);
 int            free_mutex(int descriptor);
 
 // number of elements in fixed-size array

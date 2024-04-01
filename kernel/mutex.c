@@ -41,40 +41,52 @@ alloc_mutex(void) {
     return -1;
 }
 
-// блокируем мьютекс по его дескриптору
+// блокируем мьютекс по его дескриптору в таблице текущего процесса
 // возвращаем 0 - если блокировка успешна, -1 - если ошибка в дескрипторе
 int
 acquire_mutex(int descriptor) {
 
-    if (descriptor < 0 || descriptor >= NMUTEX)
+    if (descriptor < 0 || descriptor >= NOMUTEX)
         return -1;
 
-    acquiresleep(&mutexes[descriptor].sleeplock);
+    if (myproc()->mutexes[descriptor] < 0 || myproc()->mutexes[descriptor] >= NMUTEX)
+        return -2;
+
+    acquiresleep(&mutexes[myproc()->mutexes[descriptor]].sleeplock);
 
     return 0;
 }
 
-// освобождаем мьютекс по его дескриптору
+// освобождаем мьютекс по его дескриптору в таблице текущего процесса
 // возвращаем 0 - если освобождение успешно, -1 - если ошибка в дескрипторе
 int
 release_mutex(int descriptor) {
 
-    if (descriptor < 0 || descriptor >= NMUTEX)
+    if (descriptor < 0 || descriptor >= NOMUTEX)
         return -1;
 
-    releasesleep(&mutexes[descriptor].sleeplock);
+    if (myproc()->mutexes[descriptor] < 0 || myproc()->mutexes[descriptor] >= NMUTEX)
+        return -2;
+
+    releasesleep(&mutexes[myproc()->mutexes[descriptor]].sleeplock);
 
     return 0;
 }
 
 
 //   увеличиваем счетчик использования мьютекса в процессах
+//   по его дескриптору в таблице текущего процесса
 //  в случае ошибки дексриптора - -1, в случае успеха - 0
 int
 use_mutex(int descriptor) {
 
-    if (descriptor < 0 || descriptor >= NMUTEX)
+    if (descriptor < 0 || descriptor >= NOMUTEX)
         return -1;
+
+    if (myproc()->mutexes[descriptor] < 0 || myproc()->mutexes[descriptor] >= NMUTEX)
+        return -2;
+
+    descriptor = myproc()->mutexes[descriptor];
 
     // для избежания гонки данных и корректной работы счетчика
     acquire(&mutexes[descriptor].spinlock);
@@ -84,35 +96,20 @@ use_mutex(int descriptor) {
     return 0;
 }
 
-// делаем проверку того, что процесс держит этот мьютекс
-int
-holding_mutex(int descriptor) {
-    if (descriptor < 0 || descriptor >= NMUTEX)
-        return -1;
-    int ans;
-    acquire(&mutexes[descriptor].spinlock);
-    ans = holdingsleep(&mutexes[descriptor].sleeplock);
-    release(&mutexes[descriptor].spinlock);
-    return ans;
-}
-
-// осовобождаем мьютекс по его дескриптору
-// успех - 0
-// коды ошибок:
-// -1 - не свой мьютекс, -2 - ошибка освобождения,
-// -3 - его никто не использует, -4 - неверный дескриптор
+// осовобождаем мьютекс по его дескриптору таблицы текущего процесса
 int
 free_mutex(int descriptor) {
 
-    int holds = holding_mutex(descriptor);
-    // пытаемся освободить чужую блокировку
-    if (holds < 0)
+    if (descriptor < 0 || descriptor >= NOMUTEX)
         return -1;
 
-    int rel_code = release_mutex(descriptor);
-    // ошибка в освобождении
-    if (rel_code < 0)
+    if (myproc()->mutexes[descriptor] < 0 || myproc()->mutexes[descriptor] >= NMUTEX)
         return -2;
+
+    release_mutex(descriptor);
+
+    int cur_desc = descriptor;
+    descriptor = myproc()->mutexes[descriptor];
 
     acquire(&mutexes[descriptor].spinlock);
 
@@ -121,17 +118,10 @@ free_mutex(int descriptor) {
         return -3;
     }
 
-    struct proc* p = myproc();
     // удаляем мьютекс из набора у данного процесса, чтобы потом
     // не было двойного освобождения и ошибки
-    for (int i = 0; i < NOMUTEX; ++i) {
-        if (p->mutexes[i] == descriptor) {
-            mutexes[descriptor].used--;
-            p->mutexes[i] = -1;
-            release(&mutexes[descriptor].spinlock);
-            return 0;
-        }
-    }
-
-    return -4;
+    myproc()->mutexes[cur_desc] = -1;
+    mutexes[descriptor].used--;
+    release(&mutexes[descriptor].spinlock);
+    return 0;
 }

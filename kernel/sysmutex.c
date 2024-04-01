@@ -12,10 +12,7 @@ sys_new_mutex() {
     if (description < 0) {
         return -1;
     }
-    if (add_new_mutex(description) < 0) {
-        return -2;
-    }
-    return description;
+     return add_new_mutex(description);
 }
 
 uint64
