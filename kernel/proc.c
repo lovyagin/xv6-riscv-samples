@@ -57,6 +57,10 @@ procinit(void)
       initlock(&p->lock, "proc");
       p->state = UNUSED;
       p->kstack = KSTACK((int) (p - proc));
+      // изначльно нет мьютексов, поэтому пишем что-то отрицательное
+      for(int i = 0 ; i < NOMUTEX; ++i){
+          p->mutexes[i] = -1;
+      }
   }
 }
 
