@@ -30,7 +30,10 @@ OBJS = \
   $K/plic.o \
   $K/virtio_disk.o\
   $K/sysadd.o\
-  $K/syslistinfo.o
+  $K/syslistinfo.o\
+  $K/sysadd.o\
+  $K/mutex.o\
+  $K/sysmutex.o\
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin
@@ -144,6 +147,8 @@ UPROGS=\
 	$U/_hw1_3\
 	$U/_hw3_3\
 	$U/_ps\
+	$U/_hw3_mut\
+	$U/_hw3_notmut\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

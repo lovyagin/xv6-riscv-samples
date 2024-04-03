@@ -25,6 +25,10 @@ int sleep(int);
 int uptime(void);
 int add(int n1, int n2); // add two integers
 int listinfo(struct procinfo *plist, int limit); // get processes info
+int new_mutex(void);     // create new mutex
+int acquire_mutex(int description); // acquire mutex by description
+int release_mutex(int description); // release mutex by description
+int free_mutex(int description);    // free mutex by description
 
 // ulib.c
 int stat(const char*, struct stat*);

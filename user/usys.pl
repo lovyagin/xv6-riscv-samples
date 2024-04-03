@@ -38,3 +38,7 @@ entry("sleep");
 entry("uptime");
 entry("add");
 entry("listinfo");
+entry("new_mutex");
+entry("acquire_mutex");
+entry("release_mutex");
+entry("free_mutex");
