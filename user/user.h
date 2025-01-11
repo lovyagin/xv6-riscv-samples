@@ -22,7 +22,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
-int scpy(char *dst, const char *src, int size); // Safe copy (via system)
+int scpy(char *dst, const char *src, int size); // Semi-safe copy (via syscall)
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -39,7 +39,7 @@ int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 
-void perror(int errno);
+void perror(int errno); // print error message by code (userspace)
 
 // umalloc.c
 void* malloc(uint);
